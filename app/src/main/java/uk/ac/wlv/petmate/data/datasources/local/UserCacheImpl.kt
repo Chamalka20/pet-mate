@@ -5,7 +5,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.first
-import uk.ac.wlv.petmate.model.User
+import uk.ac.wlv.petmate.data.model.User
 
 class UserCacheImpl(
     private val context: Context

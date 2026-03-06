@@ -1,12 +1,10 @@
 package uk.ac.wlv.petmate.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
-import uk.ac.wlv.petmate.data.network.InternetChecker
 import uk.ac.wlv.petmate.data.repository.AuthRepository
-import uk.ac.wlv.petmate.model.User
+import uk.ac.wlv.petmate.data.model.User
 
 class SessionViewModel(
     private val authRepository: AuthRepository

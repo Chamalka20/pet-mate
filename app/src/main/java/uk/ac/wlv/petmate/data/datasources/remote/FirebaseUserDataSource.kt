@@ -7,7 +7,7 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
-import uk.ac.wlv.petmate.model.User
+import uk.ac.wlv.petmate.data.model.User
 
 class FirebaseUserDataSource {
 

@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 val PetOrange = Color(0xFFFF9800)
 val PetGreen = Color(0xFF4CAF50)
 val PetBrown = Color(0xFF795548)
-val PetBackground = Color(0xFFFFFDF9)
+val PetBackground = Color(0xFFFFFBF7)
 val PetSurface =Color(0xFFFFF5DA)
 
 //  Dark theme

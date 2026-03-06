@@ -2,7 +2,7 @@ package uk.ac.wlv.petmate.data.repository
 
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
-import uk.ac.wlv.petmate.model.User
+import uk.ac.wlv.petmate.data.model.User
 
 
 interface AuthRepository {

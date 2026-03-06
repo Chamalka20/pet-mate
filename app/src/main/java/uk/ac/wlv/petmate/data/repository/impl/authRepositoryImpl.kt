@@ -1,13 +1,11 @@
 package uk.ac.wlv.petmate.data.repository.impl
 
-import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import uk.ac.wlv.petmate.data.datasources.local.UserCache
 import uk.ac.wlv.petmate.data.datasources.remote.FirebaseUserDataSource
 import uk.ac.wlv.petmate.data.repository.AuthRepository
-import uk.ac.wlv.petmate.model.User
-import kotlin.math.log
+import uk.ac.wlv.petmate.data.model.User
 
 class AuthRepositoryImpl(
     private val userCache: UserCache,

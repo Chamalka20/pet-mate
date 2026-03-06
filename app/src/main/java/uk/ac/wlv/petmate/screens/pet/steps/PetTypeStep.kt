@@ -40,13 +40,11 @@ import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.rememberLottieComposition
-import org.koin.androidx.compose.koinViewModel
 import uk.ac.wlv.petmate.core.UiState
-import uk.ac.wlv.petmate.model.PetType
+import uk.ac.wlv.petmate.data.model.PetType
 import uk.ac.wlv.petmate.viewmodel.PetProfileViewModel
 import uk.ac.wlv.petmate.R
 import uk.ac.wlv.petmate.components.ImageTextButton
-import uk.ac.wlv.petmate.viewmodel.SessionViewModel
 
 @Composable
 fun PetTypeStep(viewModel: PetProfileViewModel,
