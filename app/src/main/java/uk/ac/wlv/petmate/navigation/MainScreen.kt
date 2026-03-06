@@ -4,34 +4,31 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import uk.ac.wlv.petmate.components.PetMateBottomBar
-import uk.ac.wlv.petmate.screens.CareScreen
-import uk.ac.wlv.petmate.screens.HomeScreen
-import uk.ac.wlv.petmate.screens.PetsScreen
-import uk.ac.wlv.petmate.screens.ProfileScreen
+import uk.ac.wlv.petmate.screens.mainScreens.CareScreen
+import uk.ac.wlv.petmate.screens.mainScreens.home.HomeScreen
+import uk.ac.wlv.petmate.screens.mainScreens.PetsScreen
+import uk.ac.wlv.petmate.screens.mainScreens.ProfileScreen
+import androidx.navigation.compose.rememberNavController
+import uk.ac.wlv.petmate.viewmodel.PetProfileViewModel
 
 @Composable
-fun MainScreen() {
-
-    val navController = rememberNavController()
+fun MainScreen(rootNavController: NavController,petProfileViewModel: PetProfileViewModel) {
+    val bottomNavController = rememberNavController()
 
     Scaffold(
-        bottomBar = {
-            PetMateBottomBar(navController)
-        }
+        bottomBar = { PetMateBottomBar(bottomNavController) }
     ) { paddingValues ->
 
         NavHost(
-            navController = navController,
+            navController = bottomNavController,
             startDestination = "home",
             modifier = Modifier.padding(paddingValues)
         ) {
-
-            composable("home") { HomeScreen() }
+            composable("home") { HomeScreen(rootNavController = rootNavController, petProfileViewModel = petProfileViewModel) }
             composable("pets") { PetsScreen() }
             composable("care") { CareScreen() }
             composable("profile") { ProfileScreen() }

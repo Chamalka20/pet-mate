@@ -1,6 +1,7 @@
 package uk.ac.wlv.petmate.screens.pet
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
@@ -19,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,8 +46,8 @@ import uk.ac.wlv.petmate.viewmodel.PetProfileViewModel
 @Composable
 fun PetProfileSetupScreen(
     navController: NavHostController,
-    viewModel: PetProfileViewModel = koinViewModel(),
-
+    viewModel: PetProfileViewModel,
+    isDefaultAddBackButton: Boolean = false
 ) {
 
     val currentStep by viewModel.currentStep.collectAsState()
@@ -53,79 +55,113 @@ fun PetProfileSetupScreen(
 
     LaunchedEffect(savePetState) {
         if (savePetState is UiState.Success) {
-            navController.navigate("main") {
-                popUpTo("petSetup") { inclusive = true }
+            if(!isDefaultAddBackButton) {
+                viewModel.resetPetState()
+                navController.navigate("main") {
+                    popUpTo("petSetup") { inclusive = true }
+                }
+            }else{
+                viewModel.resetPetState()
+                navController.popBackStack();
             }
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Profile Setup") },
-                navigationIcon = {
-                    if (currentStep > 0) {
-                        IconButton(onClick = { viewModel.previousStep() }) {
-                            Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
-                        }
-                    }
-                },
-                actions = {
-                    if (currentStep < 5) {
-                        TextButton(onClick = { viewModel.skipStep() }) {
-                            Text("Skip")
-                        }
-                    }
-                }
-            )
-        }
-    ) { padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-        ) {
-            Column(
-                modifier = Modifier.fillMaxSize()
-            ) {
-                // Progress Indicator
-                LinearProgressIndicator(
-                progress = { (currentStep + 1) / 6f },
-                modifier = Modifier.fillMaxWidth(),
-                color = ProgressIndicatorDefaults.linearColor,
-                trackColor = ProgressIndicatorDefaults.linearTrackColor,
-                strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
-                )
+    BackHandler {
+        if (!isDefaultAddBackButton) {
+            if (currentStep > 0) {
+               viewModel.previousStep()
+            }
+        } else {
+            if (currentStep > 0) {
+                viewModel.previousStep()
+            } else {
+                navController.popBackStack()
+            }
 
-                // Step Content
-                AnimatedContent(
-                    targetState = currentStep,
-                    transitionSpec = {
-                        slideInHorizontally(
-                                                initialOffsetX = { it },
-                                                animationSpec = tween(300)
-                                            ).togetherWith(
-                            slideOutHorizontally(
-                                                targetOffsetX = { -it },
-                                                animationSpec = tween(300)
-                                            )
-                        )
+        }
+    }
+        Scaffold(
+            containerColor = MaterialTheme.colorScheme.background,
+            topBar = {
+                TopAppBar(
+                    title = { Text("Profile Setup") },
+                    navigationIcon = {
+                        if (!isDefaultAddBackButton) {
+                            if (currentStep > 0) {
+                                IconButton(onClick = { viewModel.previousStep() }) {
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                                }
+                            }
+                        } else {
+
+                            IconButton(onClick = {
+                                if (currentStep > 0) {
+                                    viewModel.previousStep()
+                                } else {
+                                    navController.popBackStack()
+                                }
+                            }) {
+                                Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back")
+                            }
+                        }
                     },
-                    label = "step_transition"
-                ) { step ->
-                    when (step) {
-                        0 -> PetNameStep(viewModel)
-                        1 -> PetAgeStep(viewModel)
-                        2 -> PetImageStep(viewModel)
-                        3 -> SpayedNeuteredStep(viewModel)
-                        4 -> MedicalConditionsStep(viewModel)
-                        5 -> PetTypeStep(viewModel)
+                    actions = {
+                        if (currentStep < 5) {
+                            TextButton(onClick = { viewModel.skipStep() }) {
+                                Text("Skip")
+                            }
+                        }
+                    }
+                )
+            }
+        ) { padding ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    // Progress Indicator
+                    LinearProgressIndicator(
+                        progress = { (currentStep + 1) / 6f },
+                        modifier = Modifier.fillMaxWidth(),
+                        color = ProgressIndicatorDefaults.linearColor,
+                        trackColor = ProgressIndicatorDefaults.linearTrackColor,
+                        strokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
+                    )
 
+                    // Step Content
+                    AnimatedContent(
+                        targetState = currentStep,
+                        transitionSpec = {
+                            slideInHorizontally(
+                                initialOffsetX = { it },
+                                animationSpec = tween(300)
+                            ).togetherWith(
+                                slideOutHorizontally(
+                                    targetOffsetX = { -it },
+                                    animationSpec = tween(300)
+                                )
+                            )
+                        },
+                        label = "step_transition"
+                    ) { step ->
+                        when (step) {
+                            0 -> PetNameStep(viewModel)
+                            1 -> PetAgeStep(viewModel)
+                            2 -> PetImageStep(viewModel)
+                            3 -> SpayedNeuteredStep(viewModel)
+                            4 -> MedicalConditionsStep(viewModel)
+                            5 -> PetTypeStep(viewModel)
+
+                        }
                     }
                 }
+
+
             }
-
-
         }
     }
-}

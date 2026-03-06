@@ -1,4 +1,4 @@
-package uk.ac.wlv.petmate.model
+package uk.ac.wlv.petmate.data.model
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite

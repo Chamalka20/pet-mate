@@ -9,9 +9,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.ac.wlv.petmate.core.UiState
 import uk.ac.wlv.petmate.core.utils.safeApiCall
-import uk.ac.wlv.petmate.data.network.InternetChecker
 import uk.ac.wlv.petmate.data.repository.AuthRepository
-import uk.ac.wlv.petmate.model.User
+import uk.ac.wlv.petmate.data.model.User
 
 class AuthViewModel(private val repository: AuthRepository,private val sessionViewModel: SessionViewModel) : BaseViewModel() {
 

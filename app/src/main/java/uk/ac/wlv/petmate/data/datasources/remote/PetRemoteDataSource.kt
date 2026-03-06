@@ -3,7 +3,7 @@ package uk.ac.wlv.petmate.data.datasources.remote
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
-import uk.ac.wlv.petmate.model.Pet
+import uk.ac.wlv.petmate.data.model.Pet
 
 class PetRemoteDataSource {
 
@@ -28,9 +28,10 @@ class PetRemoteDataSource {
         }
     }
 
-    suspend fun getPet(userId: String, petId: String): Pet? {
+    suspend fun getPet(userId: String, petId: String): Pet {
         val snapshot = petsCollection(userId).document(petId).get().await()
         return snapshot.toObject(Pet::class.java)
+            ?: throw Exception("Pet not found")
     }
 
     suspend fun updatePet(userId: String, pet: Pet): Pet {
