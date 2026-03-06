@@ -1,4 +1,4 @@
-package uk.ac.wlv.petmate.model
+package uk.ac.wlv.petmate.data.model
 
 data class User(
     val id: String,

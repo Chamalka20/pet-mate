@@ -3,7 +3,7 @@ package uk.ac.wlv.petmate.data.repository.impl
 import com.google.firebase.auth.FirebaseAuth
 import uk.ac.wlv.petmate.data.datasources.remote.PetRemoteDataSource
 import uk.ac.wlv.petmate.data.repository.PetRepository
-import uk.ac.wlv.petmate.model.Pet
+import uk.ac.wlv.petmate.data.model.Pet
 
 class PetRepositoryImpl(
     private val remoteDataSource: PetRemoteDataSource
@@ -19,7 +19,7 @@ class PetRepositoryImpl(
         return remoteDataSource.getPetList(userId)
     }
 
-    override suspend fun getPet(petId: String): Pet? {
+    override suspend fun getPet(petId: String): Pet {
         return remoteDataSource.getPet(userId, petId)
     }
 

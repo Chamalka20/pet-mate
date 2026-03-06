@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import uk.ac.wlv.petmate.model.BottomNavItem
+import uk.ac.wlv.petmate.data.model.BottomNavItem
 
 @Composable
 fun PetMateBottomBar(navController: NavHostController) {

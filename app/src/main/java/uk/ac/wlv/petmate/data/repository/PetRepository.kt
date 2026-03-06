@@ -1,6 +1,6 @@
 package uk.ac.wlv.petmate.data.repository
 
-import uk.ac.wlv.petmate.model.Pet
+import uk.ac.wlv.petmate.data.model.Pet
 
 interface PetRepository {
 
@@ -8,7 +8,7 @@ interface PetRepository {
 
     suspend fun getPetList(): List<Pet>
 
-    suspend fun getPet(petId: String): Pet?
+    suspend fun getPet(petId: String): Pet
 
     suspend fun updatePet(pet: Pet): Pet
 
