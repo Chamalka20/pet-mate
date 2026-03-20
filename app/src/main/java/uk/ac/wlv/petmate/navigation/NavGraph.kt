@@ -16,7 +16,9 @@ import uk.ac.wlv.petmate.screens.SplashScreen
 import uk.ac.wlv.petmate.screens.pet.PetDetailsScreen
 import uk.ac.wlv.petmate.screens.pet.PetEditScreen
 import uk.ac.wlv.petmate.screens.pet.PetProfileSetupScreen
+import uk.ac.wlv.petmate.screens.vet.VetDetailsScreen
 import uk.ac.wlv.petmate.viewmodel.PetProfileViewModel
+import uk.ac.wlv.petmate.viewmodel.VetViewModel
 
 
 @Composable
@@ -67,9 +69,13 @@ fun NavGraph(
                 val petProfileViewModel: PetProfileViewModel = koinViewModel(
                     viewModelStoreOwner = parentEntry
                 )
+                val vetViewModel: VetViewModel = koinViewModel(
+                    viewModelStoreOwner = parentEntry
+                )
                 MainScreen(
                     rootNavController = navController,
-                    petProfileViewModel = petProfileViewModel
+                    petProfileViewModel = petProfileViewModel,
+                    vetViewModel = vetViewModel
                 )
             }
 
@@ -137,6 +143,27 @@ fun NavGraph(
                     petId = petId,
                     viewModel = petProfileViewModel,
                     navController = navController
+                )
+            }
+
+
+            composable(
+                route = "vetDetailsScreen/{vetId}",
+                arguments = listOf(
+                    navArgument("vetId") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val vetId = backStackEntry.arguments?.getString("vetId") ?: ""
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry("authenticated")
+                }
+                val vetViewModel: VetViewModel = koinViewModel(
+                    viewModelStoreOwner = parentEntry
+                )
+                VetDetailsScreen(
+                    vetId = vetId,
+                    vetViewModel = vetViewModel,
+                    navController = navController,
                 )
             }
         }

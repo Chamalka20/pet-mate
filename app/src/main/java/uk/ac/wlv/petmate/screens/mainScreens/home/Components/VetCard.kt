@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -33,9 +34,10 @@ import uk.ac.wlv.petmate.components.NetworkCircleImage
 import uk.ac.wlv.petmate.data.model.Vet
 
 @Composable
-fun VetCard(vet: Vet) {
+fun VetCard(vet: Vet, onClick: () -> Unit = {}) {
 
     Card(
+        onClick = onClick,
         modifier = Modifier
             .width(180.dp)
             .padding(vertical = 12.dp),
@@ -57,6 +59,13 @@ fun VetCard(vet: Vet) {
                 imageUrl = vet.imageUrl,
                 contentDescription = vet.name
             )
+            Spacer(modifier = Modifier.height(4.dp))
+            vet.name?.let {
+                Text(
+                    text = it,
+                    style = MaterialTheme.typography.labelSmall
+                )
+            }
 
             Spacer(modifier = Modifier.height(6.dp))
 
@@ -81,7 +90,7 @@ fun VetCard(vet: Vet) {
                 )
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(1.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -98,17 +107,19 @@ fun VetCard(vet: Vet) {
 
                 Spacer(modifier = Modifier.width(4.dp))
 
-                Text(
-                    text = vet.location,
-                    fontSize = 12.sp,
-                    color = Color.Gray,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
+                vet.location?.let {
+                    Text(
+                        text = it,
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
 
-                )
+                        )
+                }
             }
 
-            Spacer(modifier = Modifier.height(6.dp))
+            Spacer(modifier = Modifier.height(4.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
