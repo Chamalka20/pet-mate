@@ -14,9 +14,10 @@ import uk.ac.wlv.petmate.screens.mainScreens.PetsScreen
 import uk.ac.wlv.petmate.screens.mainScreens.ProfileScreen
 import androidx.navigation.compose.rememberNavController
 import uk.ac.wlv.petmate.viewmodel.PetProfileViewModel
+import uk.ac.wlv.petmate.viewmodel.VetViewModel
 
 @Composable
-fun MainScreen(rootNavController: NavController,petProfileViewModel: PetProfileViewModel) {
+fun MainScreen(rootNavController: NavController,petProfileViewModel: PetProfileViewModel,vetViewModel: VetViewModel) {
     val bottomNavController = rememberNavController()
 
     Scaffold(
@@ -28,7 +29,7 @@ fun MainScreen(rootNavController: NavController,petProfileViewModel: PetProfileV
             startDestination = "home",
             modifier = Modifier.padding(paddingValues)
         ) {
-            composable("home") { HomeScreen(rootNavController = rootNavController, petProfileViewModel = petProfileViewModel) }
+            composable("home") { HomeScreen(rootNavController = rootNavController, petProfileViewModel = petProfileViewModel, vetViewModel =vetViewModel ) }
             composable("pets") { PetsScreen() }
             composable("care") { CareScreen() }
             composable("profile") { ProfileScreen() }

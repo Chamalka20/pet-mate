@@ -36,6 +36,7 @@ import uk.ac.wlv.petmate.R
 import uk.ac.wlv.petmate.components.ImageTextButton
 import uk.ac.wlv.petmate.core.SnackbarController
 import uk.ac.wlv.petmate.core.UiState
+import uk.ac.wlv.petmate.data.model.Pet
 import uk.ac.wlv.petmate.data.model.User
 import uk.ac.wlv.petmate.ui.theme.DisplayFontFamily
 import uk.ac.wlv.petmate.viewmodel.AuthViewModel
@@ -60,49 +61,29 @@ fun SignInScreen(
         authViewModel.signIn(task)
     }
 
-    // Handle login state changes
     LaunchedEffect(loginState) {
-        when (val state = loginState) {
-            is UiState.Success<User> -> {
-                when (val pets = petListState) {
-                    is UiState.Success -> {
-                        val destination =
-                            if (pets.data.isEmpty()) "petProfileSetup"
-                            else "main"
+        if (loginState is UiState.Success) {
+            petProfileViewModel.loadPetList()
+        }
+    }
+    LaunchedEffect(loginState, petListState) {
 
-                        SnackbarController.showSuccess("Login successful!")
+        if (loginState !is UiState.Success) return@LaunchedEffect
 
-                        navController.navigate(destination) {
-                            popUpTo("signIn") { inclusive = true }
-                        }
+        when (val pets = petListState) {
+            is UiState.Loading -> return@LaunchedEffect
 
-                        authViewModel.resetLoginState()
-                    }
-
-                    is UiState.Error -> {
-                        // No pets or error → force setup
-                        navController.navigate("petProfileSetup") {
-                            popUpTo("signIn") { inclusive = true }
-                        }
-                    }
-
-                    else -> Unit
+            is UiState.Success -> {
+                val destination = if (pets.data.isEmpty()) "petProfileSetup" else "main"
+                SnackbarController.showSuccess("Login successful!")
+                navController.navigate(destination) {
+                    popUpTo("signIn") { inclusive = true }
                 }
-
+                authViewModel.resetLoginState()
             }
 
-            is UiState.Error -> {
-                SnackbarController.showError(state.message)
 
-            }
-
-            is UiState.Loading -> {
-                // Loading state handled in UI
-            }
-
-            is UiState.Idle -> {
-                // Idle state
-            }
+            else -> return@LaunchedEffect
         }
     }
 
@@ -112,6 +93,7 @@ fun SignInScreen(
             launcher.launch(googleSignInClient.signInIntent)
         },
         loginState = loginState,
+        petState =  petListState
     )
 }
 
@@ -119,6 +101,7 @@ fun SignInScreen(
 fun SignInScreenContent(
     onGoogleSignInClick: () -> Unit,
     loginState: UiState<User>,
+    petState: UiState<List<Pet>>
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
 
@@ -172,7 +155,7 @@ fun SignInScreenContent(
 
             ImageTextButton(
                 text = "Sign in with Google",
-                isLoading = loginState is UiState.Loading ,
+                isLoading = loginState is UiState.Loading || petState is UiState.Loading ,
                 imageRes = R.drawable.google_logo,
                 onClick = onGoogleSignInClick,
                 backgroundColor = MaterialTheme.colorScheme.primary,
@@ -192,6 +175,7 @@ fun SignInScreenPreview() {
         SignInScreenContent(
             onGoogleSignInClick = {},
             loginState = UiState.Idle,
+            petState = UiState.Idle,
         )
 }
 

@@ -54,16 +54,19 @@ import uk.ac.wlv.petmate.screens.mainScreens.home.Components.PetItem
 import uk.ac.wlv.petmate.screens.mainScreens.home.Components.ReminderCard
 import uk.ac.wlv.petmate.screens.mainScreens.home.Components.ServiceItemCard
 import uk.ac.wlv.petmate.screens.mainScreens.home.Components.VetCard
+import uk.ac.wlv.petmate.screens.mainScreens.home.Components.VetCardShimmerRow
 import uk.ac.wlv.petmate.ui.theme.DisplayFontFamily
 import uk.ac.wlv.petmate.viewmodel.PetProfileViewModel
 import uk.ac.wlv.petmate.viewmodel.SessionViewModel
+import uk.ac.wlv.petmate.viewmodel.VetViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(sessionViewModel: SessionViewModel = koinViewModel(),petProfileViewModel: PetProfileViewModel,rootNavController:NavController,) {
+fun HomeScreen(sessionViewModel: SessionViewModel = koinViewModel(),petProfileViewModel: PetProfileViewModel,rootNavController:NavController,vetViewModel: VetViewModel) {
     val user by sessionViewModel.currentUser
     val petListState by petProfileViewModel.petListState.collectAsStateWithLifecycle()
+    val vetListState by vetViewModel.vetListState.collectAsStateWithLifecycle()
     val services = listOf(
         ServiceItem("Clinic Visit", R.drawable.clinic_visit),
         ServiceItem("Home Visit", R.drawable.home_visit),
@@ -85,13 +88,7 @@ fun HomeScreen(sessionViewModel: SessionViewModel = koinViewModel(),petProfileVi
         )
     )
 
-    fun getSampleVets(): List<Vet> {
-        return listOf(
-            Vet("Dr. Mostafa Khalid", 5.0, "Mansheya, Alexandria", "120 EGP", "https://res.cloudinary.com/dclwrplu9/image/upload/v1772711631/Gemini_Generated_Image_pd2ce9pd2ce9pd2c_e7z1rz.png"),
-            Vet("Dr. Ghada Younes", 5.0, "Bab Sharqi", "100 EGP", "https://res.cloudinary.com/dclwrplu9/image/upload/v1772711631/Gemini_Generated_Image_pd2ce9pd2ce9pd2c_e7z1rz.png"),
-            Vet("Dr. Ahmed Ali", 4.8, "Miami, Alexandria", "110 EGP", "https://res.cloudinary.com/dclwrplu9/image/upload/v1772711631/Gemini_Generated_Image_pd2ce9pd2ce9pd2c_e7z1rz.png")
-        )
-    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
@@ -314,13 +311,43 @@ fun HomeScreen(sessionViewModel: SessionViewModel = koinViewModel(),petProfileVi
                 }
 
                 item{
-                    LazyRow(
-                        contentPadding = PaddingValues(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
+                    when (vetListState) {
 
-                        items(getSampleVets()) { vet ->
-                            VetCard(vet)
+                        is UiState.Idle -> Unit
+
+                        is UiState.Loading -> {
+                            VetCardShimmerRow()
+                        }
+
+                        is UiState.Success -> {
+                            val vets = (vetListState as UiState.Success<List<Vet>>).data
+
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 16.dp, ),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(vets) { vet ->
+                                    VetCard(
+                                        vet,
+                                        onClick = {
+                                            rootNavController.navigate(
+                                                "vetDetailsScreen/${vet.id}"
+                                            )
+                                        }
+                                    )
+                                }
+
+
+                            }
+                        }
+
+                        is UiState.Error -> {
+                            val message = (vetListState as UiState.Error).message
+                            Text(
+                                text = message,
+                                color = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.padding(horizontal = 16.dp)
+                            )
                         }
                     }
                 }
