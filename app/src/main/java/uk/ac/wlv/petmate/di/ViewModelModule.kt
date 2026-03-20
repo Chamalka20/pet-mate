@@ -9,17 +9,21 @@ import uk.ac.wlv.petmate.data.datasources.local.UserCacheImpl
 import uk.ac.wlv.petmate.data.datasources.remote.FirebaseUserDataSource
 import uk.ac.wlv.petmate.data.datasources.remote.ImageDataSource
 import uk.ac.wlv.petmate.data.datasources.remote.PetRemoteDataSource
+import uk.ac.wlv.petmate.data.datasources.remote.VetRemoteDateSource
 import uk.ac.wlv.petmate.data.network.InternetChecker
 import uk.ac.wlv.petmate.data.repository.AuthRepository
 import uk.ac.wlv.petmate.data.repository.ImageRepository
 import uk.ac.wlv.petmate.data.repository.PetRepository
+import uk.ac.wlv.petmate.data.repository.VetRepository
 import uk.ac.wlv.petmate.data.repository.impl.AuthRepositoryImpl
 import uk.ac.wlv.petmate.data.repository.impl.ImageRepositoryImpl
 import uk.ac.wlv.petmate.data.repository.impl.PetRepositoryImpl
+import uk.ac.wlv.petmate.data.repository.impl.VetRepositoryImpl
 import uk.ac.wlv.petmate.viewmodel.AuthViewModel
 import uk.ac.wlv.petmate.viewmodel.BaseViewModel
 import uk.ac.wlv.petmate.viewmodel.PetProfileViewModel
 import uk.ac.wlv.petmate.viewmodel.SessionViewModel
+import uk.ac.wlv.petmate.viewmodel.VetViewModel
 
 val viewModelModule = module {
     single<UserCache> {
@@ -62,6 +66,16 @@ get()
            get(),
             get(),
              get()
+        )
+    }
+    single { VetRemoteDateSource() }
+    single<VetRepository> {
+        VetRepositoryImpl(get())
+    }
+    viewModel {
+        VetViewModel(
+            get(),
+
         )
     }
 }
