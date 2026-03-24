@@ -1,12 +1,9 @@
 package uk.ac.wlv.petmate.screens.vet
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -44,6 +41,7 @@ import androidx.navigation.NavHostController
 import uk.ac.wlv.petmate.components.NetworkCircleImage
 import uk.ac.wlv.petmate.core.UiState
 import uk.ac.wlv.petmate.data.model.Vet
+import uk.ac.wlv.petmate.screens.vet.Components.MapPreview
 import uk.ac.wlv.petmate.screens.vet.Components.VetDetailsShimmer
 import uk.ac.wlv.petmate.viewmodel.VetViewModel
 
@@ -131,7 +129,7 @@ fun VetDetailsScreen(vetId: String,
 
                     Spacer(modifier = Modifier.height(10.dp))
 
-                    MapPreview()
+                    MapPreview(latitude =vet.latitude, longitude = vet.longitude )
                 }
             }
             is UiState.Error -> { Text(
@@ -267,20 +265,6 @@ fun VetInfoItem(
     }
 }
 
-@Composable
-fun MapPreview() {
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-            .background(Color.LightGray),
-        contentAlignment = Alignment.Center
-    ) {
-
-        Text("Map Preview")
-    }
-}
 
 //@Preview(showBackground = true)
 //@Composable
