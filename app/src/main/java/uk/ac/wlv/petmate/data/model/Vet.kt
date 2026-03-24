@@ -11,6 +11,8 @@ data class Vet(
     val workingDays: String? = null,
     val workingTime: String? = null,
     val location: String? = null,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
     val rewardPoints: Int? = null,
     val waitingTimeMinutes: Int? = null,
     val imageUrl: String? = null

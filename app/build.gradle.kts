@@ -133,5 +133,6 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.5.0")
     implementation("com.cloudinary:cloudinary-android:3.1.2")
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
 
 }
