@@ -3,22 +3,22 @@ package uk.ac.wlv.petmate.data.repository.impl
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.tasks.Task
 import uk.ac.wlv.petmate.data.datasources.local.UserCache
-import uk.ac.wlv.petmate.data.datasources.remote.FirebaseUserDataSource
+import uk.ac.wlv.petmate.data.datasources.remote.UserDataSource
+import uk.ac.wlv.petmate.data.model.ApiUser
 import uk.ac.wlv.petmate.data.repository.AuthRepository
-import uk.ac.wlv.petmate.data.model.User
 
 class AuthRepositoryImpl(
     private val userCache: UserCache,
-    private val firebaseDataSource: FirebaseUserDataSource
+    private val UserDataSource: UserDataSource
 ) : AuthRepository {
 
-    override suspend fun handleSignInResult(
+    override suspend fun GoogleSignInResult(
         task: Task<GoogleSignInAccount>
-    ): User {
+    ): ApiUser {
 
             val account = task.getResult(Exception::class.java)
 
-            val user = firebaseDataSource.signInWithGoogle(account)
+            val user = UserDataSource.signInWithGoogle(account)
             // 💾 Cache locally
             userCache.saveUser(user)
 
@@ -27,7 +27,18 @@ class AuthRepositoryImpl(
         return user
     }
 
-    override suspend fun getCachedUser(): User? {
+    override suspend fun normalLogin(email: String, password: String): ApiUser{
+
+        val user = UserDataSource.login(email,password)
+        // 💾 Cache locally
+        userCache.saveUser(user)
+        Result.success(user)
+
+        return user
+
+    }
+
+    override suspend fun getCachedUser(): ApiUser? {
         return userCache.getUser()
     }
 }

@@ -1,9 +1,11 @@
 package uk.ac.wlv.petmate.data.datasources.local
 
-import uk.ac.wlv.petmate.data.model.User
+import uk.ac.wlv.petmate.data.model.ApiUser
+
 
 interface UserCache {
-    suspend fun saveUser(user: User)
-    suspend fun getUser(): User?
+    suspend fun saveUser(user: ApiUser)
+    suspend fun getUser(): ApiUser?
+    suspend fun getToken(): String?
     suspend fun clear()
 }

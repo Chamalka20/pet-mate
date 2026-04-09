@@ -34,8 +34,8 @@ class PetProfileViewModel(
     private val _currentStep = MutableStateFlow(savedStateHandle["currentStep"] ?: 0)
     val currentStep: StateFlow<Int> = _currentStep.asStateFlow()
 
-    private val _editingPetId = MutableStateFlow<String?>(savedStateHandle["editingPetId"])
-    val editingPetId: StateFlow<String?> = _editingPetId.asStateFlow()
+    private val _editingPetId = MutableStateFlow<Int?>(savedStateHandle["editingPetId"])
+    val editingPetId: StateFlow<Int?> = _editingPetId.asStateFlow()
 
     private val _petName = MutableStateFlow(savedStateHandle["petName"] ?: "")
     val petName = _petName.asStateFlow()
@@ -96,7 +96,7 @@ class PetProfileViewModel(
         }
     }
 
-    fun loadPet(petId: String) {
+    fun loadPet(petId: Int) {
         viewModelScope.launch {
             _selectedPetState.value = UiState.Loading
             val result = safeApiCall {petRepository.getPet( petId)}
@@ -231,7 +231,7 @@ class PetProfileViewModel(
         }
     }
 
-    fun deletePet(petId: String, onSuccess: () -> Unit) {
+    fun deletePet(petId: Int, onSuccess: () -> Unit) {
         checkInternetAndExecute(
             onConnected = {
                 viewModelScope.launch {
@@ -301,7 +301,7 @@ class PetProfileViewModel(
                             .map { it.name }
                     )
 
-                    val result = safeApiCall { petRepository.updatePet(pet) }
+                    val result = safeApiCall { petRepository.updatePet(pet.id, pet) }
 
                     result
                         .onSuccess {
