@@ -1,7 +1,7 @@
 package uk.ac.wlv.petmate.data.model
 
 data class Vet(
-    val id: String? = null,
+    val id: Int = 0,
     val name: String? = null,
     val specialization: String? = null,
     val experienceYears: Int? = null,

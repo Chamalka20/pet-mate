@@ -1,7 +1,10 @@
 package uk.ac.wlv.petmate.data.model
 
+import com.google.gson.annotations.JsonAdapter
+import uk.ac.wlv.petmate.core.utils.StringOrArrayDeserializer
+
 data class Pet(
-    val id: String = "",
+    val id: Int = 0,
     val name: String = "",
     var type: PetType? = null,
     val breed: String = "",
@@ -11,6 +14,7 @@ data class Pet(
     val isSpayedNeutered: Boolean = false,
     val medicalConditions: List<String> = emptyList(),
     val allergies: List<String> = emptyList(),
+
     val imageUrl: String = ""
 )
 

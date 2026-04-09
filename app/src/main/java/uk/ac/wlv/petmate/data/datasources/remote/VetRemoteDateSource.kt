@@ -6,45 +6,41 @@ import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
 import uk.ac.wlv.petmate.data.model.Pet
 import uk.ac.wlv.petmate.data.model.Vet
+import uk.ac.wlv.petmate.data.network.ApiClient
+import kotlin.math.ceil
 
-class VetRemoteDateSource {
+class VetRemoteDataSource(
 
-    private val firestore = Firebase.firestore
-    private fun vetsCollection() = firestore.collection("vets")
+) {
 
     companion object {
-        private const val PAGE_SIZE = 10L
+        private const val PAGE_SIZE = 10
     }
 
-    private var lastVisibleDocument: DocumentSnapshot? = null
+    private var currentPage = 1
     var isLastPage = false
-        private set                  // ViewModel can read it, only this class can write it
+        private set
 
-    suspend fun getVetsList( isRefresh: Boolean = false): List<Vet> {
+    suspend fun getVetsList(isRefresh: Boolean = false): List<Vet> {
         if (isRefresh) {
-            lastVisibleDocument = null
+            currentPage = 1
             isLastPage = false
         }
 
         if (isLastPage) return emptyList()
 
-        val query = vetsCollection().limit(PAGE_SIZE)
+        val response =ApiClient.vetApi.getVets(page = currentPage, pageSize = PAGE_SIZE)
 
-        val snapshot = (if (lastVisibleDocument != null)
-            query.startAfter(lastVisibleDocument!!)
-        else
-            query).get().await()
+        val totalPages = ceil(response.total.toDouble() / PAGE_SIZE).toInt()
+        isLastPage = currentPage >= totalPages
 
-        lastVisibleDocument = snapshot.documents.lastOrNull()
-        isLastPage = snapshot.documents.size < PAGE_SIZE
+        if (!isLastPage) currentPage++
 
-        return snapshot.documents.mapNotNull { it.toObject(Vet::class.java) }
+        return response.data
     }
 
-    suspend fun getVet( vetId: String): Vet {
-        val snapshot = vetsCollection().document(vetId).get().await()
-        return snapshot.toObject(Vet::class.java)
-            ?: throw Exception("Pet not found")
+    suspend fun getVet(vetId: Int): Vet {
+        return ApiClient.vetApi.getVet(id =  vetId)
+            ?: throw Exception("Vet not found")
     }
-
 }

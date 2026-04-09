@@ -44,6 +44,7 @@ import org.koin.androidx.compose.koinViewModel
 import uk.ac.wlv.petmate.R
 import uk.ac.wlv.petmate.components.shimmers.PetShimmerRow
 import uk.ac.wlv.petmate.core.UiState
+import uk.ac.wlv.petmate.data.model.ApiUser
 import uk.ac.wlv.petmate.data.model.Pet
 import uk.ac.wlv.petmate.data.model.Reminder
 import uk.ac.wlv.petmate.data.model.ServiceItem
@@ -64,7 +65,7 @@ import uk.ac.wlv.petmate.viewmodel.VetViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(sessionViewModel: SessionViewModel = koinViewModel(),petProfileViewModel: PetProfileViewModel,rootNavController:NavController,vetViewModel: VetViewModel) {
-    val user by sessionViewModel.currentUser
+    val ApiUser by sessionViewModel.currentUser
     val petListState by petProfileViewModel.petListState.collectAsStateWithLifecycle()
     val vetListState by vetViewModel.vetListState.collectAsStateWithLifecycle()
     val services = listOf(
@@ -138,7 +139,7 @@ fun HomeScreen(sessionViewModel: SessionViewModel = koinViewModel(),petProfileVi
             ) {
                 item {
                     Text(
-                        "Hello,${user?.name}",
+                        "Hello,${ApiUser?.fullName}",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(16.dp)
                     )

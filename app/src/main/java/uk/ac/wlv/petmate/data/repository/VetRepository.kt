@@ -6,6 +6,6 @@ interface VetRepository {
     val isLastPage: Boolean
     suspend fun getVetList(isRefresh: Boolean =false): List<Vet>
 
-    suspend fun getVet(petId: String): Vet
+    suspend fun getVet(vetId: Int): Vet
 }
 

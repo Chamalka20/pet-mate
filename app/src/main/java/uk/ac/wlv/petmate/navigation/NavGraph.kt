@@ -110,10 +110,10 @@ fun NavGraph(
             composable(
                 route = "petDetailsScreen/{petId}",
                 arguments = listOf(
-                    navArgument("petId") { type = NavType.StringType }
+                    navArgument("petId") { type = NavType.IntType }
                 )
             ) { backStackEntry ->
-                val petId = backStackEntry.arguments?.getString("petId") ?: ""
+                val petId = backStackEntry.arguments?.getInt("petId") ?: 0
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry("authenticated")
                 }
@@ -150,10 +150,10 @@ fun NavGraph(
             composable(
                 route = "vetDetailsScreen/{vetId}",
                 arguments = listOf(
-                    navArgument("vetId") { type = NavType.StringType }
+                    navArgument("vetId") { type = NavType.IntType }
                 )
             ) { backStackEntry ->
-                val vetId = backStackEntry.arguments?.getString("vetId") ?: ""
+                val vetId = backStackEntry.arguments?.getInt("vetId") ?:0
                 val parentEntry = remember(backStackEntry) {
                     navController.getBackStackEntry("authenticated")
                 }

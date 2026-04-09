@@ -11,23 +11,23 @@ class PetRepositoryImpl(
     private val userId: String
         get() = FirebaseAuth.getInstance().currentUser?.uid
             ?: throw IllegalStateException("User not logged in")
-    override suspend fun savePet(pet: Pet): Pet {
-        return remoteDataSource.createPet(userId, pet)
+    override suspend fun savePet(pet: Pet): Boolean{
+        return remoteDataSource.createPet( pet)
     }
 
     override suspend fun getPetList(): List<Pet> {
-        return remoteDataSource.getPetList(userId)
+        return remoteDataSource.getPetList()
     }
 
-    override suspend fun getPet(petId: String): Pet {
-        return remoteDataSource.getPet(userId, petId)
+    override suspend fun getPet(petId: Int): Pet {
+        return remoteDataSource.getPet( petId= petId)
     }
 
-    override suspend fun updatePet(pet: Pet): Pet {
-        return remoteDataSource.updatePet(userId, pet)
+    override suspend fun updatePet(petId: Int, pet: Pet): Boolean {
+        return  remoteDataSource.updatePet( petId= petId, pet = pet)
     }
 
-    override suspend fun deletePet(petId: String): Boolean {
-        return remoteDataSource.deletePet(userId, petId)
+    override suspend fun deletePet(petId: Int) : Boolean{
+       return remoteDataSource.deletePet( petId=petId)
     }
 }
