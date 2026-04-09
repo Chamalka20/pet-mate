@@ -134,5 +134,9 @@ dependencies {
     implementation("com.cloudinary:cloudinary-android:3.1.2")
     implementation("com.squareup.okhttp3:okhttp:5.3.2")
     implementation("org.osmdroid:osmdroid-android:6.1.20")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
 }

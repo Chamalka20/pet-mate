@@ -36,8 +36,8 @@ import uk.ac.wlv.petmate.R
 import uk.ac.wlv.petmate.components.ImageTextButton
 import uk.ac.wlv.petmate.core.SnackbarController
 import uk.ac.wlv.petmate.core.UiState
+import uk.ac.wlv.petmate.data.model.ApiUser
 import uk.ac.wlv.petmate.data.model.Pet
-import uk.ac.wlv.petmate.data.model.User
 import uk.ac.wlv.petmate.ui.theme.DisplayFontFamily
 import uk.ac.wlv.petmate.viewmodel.AuthViewModel
 import uk.ac.wlv.petmate.viewmodel.PetProfileViewModel
@@ -100,7 +100,7 @@ fun SignInScreen(
 @Composable
 fun SignInScreenContent(
     onGoogleSignInClick: () -> Unit,
-    loginState: UiState<User>,
+    loginState: UiState<ApiUser>,
     petState: UiState<List<Pet>>
 ) {
     Box(modifier = Modifier.fillMaxSize()) {

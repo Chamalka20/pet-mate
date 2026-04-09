@@ -6,10 +6,10 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import uk.ac.wlv.petmate.data.datasources.local.UserCache
 import uk.ac.wlv.petmate.data.datasources.local.UserCacheImpl
-import uk.ac.wlv.petmate.data.datasources.remote.FirebaseUserDataSource
 import uk.ac.wlv.petmate.data.datasources.remote.ImageDataSource
 import uk.ac.wlv.petmate.data.datasources.remote.PetRemoteDataSource
-import uk.ac.wlv.petmate.data.datasources.remote.VetRemoteDateSource
+import uk.ac.wlv.petmate.data.datasources.remote.UserDataSource
+import uk.ac.wlv.petmate.data.datasources.remote.VetRemoteDataSource
 import uk.ac.wlv.petmate.data.network.InternetChecker
 import uk.ac.wlv.petmate.data.repository.AuthRepository
 import uk.ac.wlv.petmate.data.repository.ImageRepository
@@ -31,12 +31,12 @@ val viewModelModule = module {
     }
 
     single {
-        FirebaseUserDataSource()
+        UserDataSource()
     }
     single<AuthRepository> {
         AuthRepositoryImpl(
             userCache = get(),
-            firebaseDataSource = get()
+            UserDataSource = get()
         )
     }
     single {
@@ -56,7 +56,7 @@ get()
         SessionViewModel(get())
     }
     viewModel { AuthViewModel(get(),get()) }
-    single { PetRemoteDataSource() }
+    single { PetRemoteDataSource(get  ()) }
     single<PetRepository> {
         PetRepositoryImpl(get())
     }
@@ -68,7 +68,7 @@ get()
              get()
         )
     }
-    single { VetRemoteDateSource() }
+    single { VetRemoteDataSource() }
     single<VetRepository> {
         VetRepositoryImpl(get())
     }

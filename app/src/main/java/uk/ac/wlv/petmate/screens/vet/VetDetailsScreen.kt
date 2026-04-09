@@ -48,7 +48,7 @@ import uk.ac.wlv.petmate.viewmodel.VetViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VetDetailsScreen(vetId: String,
+fun VetDetailsScreen(vetId:Int,
                      vetViewModel: VetViewModel,
                      navController: NavHostController,) {
 

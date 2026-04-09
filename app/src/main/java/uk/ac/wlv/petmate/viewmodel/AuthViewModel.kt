@@ -9,14 +9,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import uk.ac.wlv.petmate.core.UiState
 import uk.ac.wlv.petmate.core.utils.safeApiCall
+import uk.ac.wlv.petmate.data.model.ApiUser
 import uk.ac.wlv.petmate.data.repository.AuthRepository
-import uk.ac.wlv.petmate.data.model.User
 
 class AuthViewModel(private val repository: AuthRepository,private val sessionViewModel: SessionViewModel) : BaseViewModel() {
 
 
-    private val _loginState = MutableStateFlow<UiState<User>>(UiState.Idle)
-    val loginState: StateFlow<UiState<User>> = _loginState.asStateFlow()
+    private val _loginState = MutableStateFlow<UiState<ApiUser>>(UiState.Idle)
+    val loginState: StateFlow<UiState<ApiUser>> = _loginState.asStateFlow()
 
 
     fun signIn(task: Task<GoogleSignInAccount>) {
@@ -33,7 +33,7 @@ class AuthViewModel(private val repository: AuthRepository,private val sessionVi
             _loginState.value = UiState.Loading
 
             val result = safeApiCall {
-                repository.handleSignInResult(task)
+                repository.GoogleSignInResult(task)
             }
             result.onSuccess { user ->
                 sessionViewModel.setUser(user)

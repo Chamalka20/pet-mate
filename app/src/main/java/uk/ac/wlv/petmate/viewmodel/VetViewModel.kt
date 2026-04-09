@@ -66,7 +66,7 @@ class VetViewModel(private val vetRepository: VetRepository,) : BaseViewModel() 
 
     fun refresh() = loadVetList()
 
-    fun loadVet(vetId: String) {
+    fun loadVet(vetId: Int) {
         viewModelScope.launch {
             _selectedVetState.value = UiState.Loading
             val result = safeApiCall {vetRepository.getVet( vetId)}
