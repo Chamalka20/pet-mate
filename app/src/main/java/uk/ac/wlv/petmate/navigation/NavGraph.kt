@@ -17,6 +17,7 @@ import uk.ac.wlv.petmate.screens.pet.PetDetailsScreen
 import uk.ac.wlv.petmate.screens.pet.PetEditScreen
 import uk.ac.wlv.petmate.screens.pet.PetProfileSetupScreen
 import uk.ac.wlv.petmate.screens.vet.VetDetailsScreen
+import uk.ac.wlv.petmate.screens.vet.VetsListScreen
 import uk.ac.wlv.petmate.viewmodel.PetProfileViewModel
 import uk.ac.wlv.petmate.viewmodel.VetViewModel
 
@@ -144,6 +145,24 @@ fun NavGraph(
                     viewModel = petProfileViewModel,
                     navController = navController
                 )
+            }
+
+            composable(
+                route = "vetsListScreen",
+
+                ) { backStackEntry ->
+
+                val parentEntry = remember(backStackEntry) {
+                    navController.getBackStackEntry("authenticated")
+                }
+                val vetViewModel: VetViewModel = koinViewModel(
+                    viewModelStoreOwner = parentEntry
+                )
+                VetsListScreen(
+                    navController = navController,
+                    vetViewModel = vetViewModel,
+
+                    )
             }
 
 

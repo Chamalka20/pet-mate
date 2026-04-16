@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import uk.ac.wlv.petmate.core.UiState
 import uk.ac.wlv.petmate.core.utils.safeApiCall
 import uk.ac.wlv.petmate.data.model.Vet
+import uk.ac.wlv.petmate.data.model.VetFilterState
 import uk.ac.wlv.petmate.data.repository.VetRepository
 
 class VetViewModel(private val vetRepository: VetRepository,) : BaseViewModel() {
@@ -22,46 +23,69 @@ class VetViewModel(private val vetRepository: VetRepository,) : BaseViewModel() 
     private val _isLoadingMore = MutableStateFlow(false)
     val isLoadingMore: StateFlow<Boolean> = _isLoadingMore
 
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery: StateFlow<String> = _searchQuery
+
+    private val _filterState = MutableStateFlow(VetFilterState())
+    val filterState: StateFlow<VetFilterState> = _filterState
+
     private val _selectedVetState = MutableStateFlow<UiState<Vet>>(UiState.Idle)
     val selectedVetState: StateFlow<UiState<Vet>> = _selectedVetState.asStateFlow()
 
     init {
-        loadVetList()
+        loadVetList(isRefresh = true)
     }
 
-    fun loadVetList() {
+    fun loadVetList(isRefresh: Boolean = false) {
         viewModelScope.launch {
-            _vetListState.value = UiState.Loading
-            accumulatedVets.clear()
 
-            val result = safeApiCall { vetRepository.getVetList(isRefresh = true) }
+            if (isRefresh) {
+                accumulatedVets.clear()
+                _vetListState.value = UiState.Loading
+            } else {
+                _isLoadingMore.value = true
+            }
+
+            val result = safeApiCall {
+                vetRepository.getVetList(
+                    isRefresh   = isRefresh,
+                    filter      = _filterState.value,
+                    searchQuery = _searchQuery.value
+                )
+            }
 
             result.onSuccess { vets ->
+
+                if (isRefresh) {
+                    accumulatedVets.clear()
+                }
+
                 accumulatedVets.addAll(vets)
+
                 _vetListState.value = UiState.Success(accumulatedVets.toList())
+
             }.onFailure { exception ->
                 _vetListState.value = UiState.Error(exception.message ?: "Failed to load vets")
-            }
-        }
-    }
-
-    fun loadNextPage() {
-        if (_isLoadingMore.value || vetRepository.isLastPage) return
-
-        viewModelScope.launch {
-            _isLoadingMore.value = true
-
-            val result = safeApiCall { vetRepository.getVetList() }
-
-            result.onSuccess { vets ->
-                accumulatedVets.addAll(vets)
-                _vetListState.value = UiState.Success(accumulatedVets.toList())
-            }.onFailure { exception ->
-                _vetListState.value = UiState.Error(exception.message ?: "Failed to load more vets")
             }
 
             _isLoadingMore.value = false
         }
+    }
+
+    fun applyFilter(filter: VetFilterState) {
+        _filterState.value = filter
+        loadVetList(isRefresh = true)
+    }
+
+    fun onSearchQueryChange(query: String) {
+        _searchQuery.value = query
+        loadVetList(isRefresh = true)
+    }
+
+    fun loadMoreVets() {
+        if (_isLoadingMore.value) return
+
+        loadVetList(isRefresh = false)
     }
 
     fun refresh() = loadVetList()

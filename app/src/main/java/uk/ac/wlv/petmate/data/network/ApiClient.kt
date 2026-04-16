@@ -31,7 +31,7 @@ object ApiClient {
     //  OkHttp Client
     private val client = OkHttpClient.Builder()
         .addInterceptor(authInterceptor)
-        .addInterceptor(logging)
+        .addNetworkInterceptor(logging)
         .build()
 
     //  Single Retrofit instance
