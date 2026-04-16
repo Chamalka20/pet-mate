@@ -11,4 +11,20 @@ object Constants {
 
     // ── Active URL ────────────────────────────────────────
     val BASE_URL = if (IS_PRODUCTION) PRODUCTION_URL else LOCAL_URL
+
+
+    val VET_SERVICES = listOf(
+        "Checkup",
+        "Vaccination",
+        "Emergency",
+        "Surgery",
+        "Skin Care",
+        "Allergy",
+        "Grooming",
+        "ICU",
+        "Dental Care"
+
+    )
+
+    const val PAGE_SIZE = 10
 }

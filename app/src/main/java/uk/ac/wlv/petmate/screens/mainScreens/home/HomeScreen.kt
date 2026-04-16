@@ -1,6 +1,7 @@
 package uk.ac.wlv.petmate.screens.mainScreens.home
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -292,7 +293,9 @@ fun HomeScreen(sessionViewModel: SessionViewModel = koinViewModel(),petProfileVi
 
                             )
 
-                        Row{
+                        Row(modifier = Modifier.clickable { rootNavController.navigate(
+                            "vetsListScreen"
+                        )  },){
 
                             Text(
                                 "View All",
