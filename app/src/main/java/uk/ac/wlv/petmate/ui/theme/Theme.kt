@@ -31,6 +31,9 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color.Black
 )
 
+val AvailableGreen = Color(0xFF2E7D32)
+val StarYellow     = Color(0xFFFFC107)
+
 @Composable
 fun PetMateTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

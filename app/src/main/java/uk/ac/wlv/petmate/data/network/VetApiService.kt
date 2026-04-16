@@ -10,8 +10,14 @@ interface VetApiService {
 
     @GET("api/vets/list")
     suspend fun getVets(
-        @Query("page") page: Int,
-        @Query("pageSize") pageSize: Int
+        @Query("page")           page         : Int,
+        @Query("pageSize")       pageSize     : Int,
+        @Query("searchQuery")    searchQuery  : String? = null,
+        @Query("services")       services     : List<String>? = null,
+        @Query("minRating")      minRating    : Float? = null,
+        @Query("maxPrice")       maxPrice     : Int? = null,
+        @Query("maxWaitingTime") maxWaitingTime: Int? = null,
+        @Query("sortBy")         sortBy       : String? = null
     ): VetsResponse
 
     @GET("api/vets/{id}")
