@@ -114,6 +114,11 @@ dependencies {
     implementation(libs.androidx.animation.core)
     implementation(libs.androidx.compose.foundation.foundation)
     implementation(libs.androidx.compose.foundation.foundation.layout)
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
+    implementation(libs.androidx.compose.remote.creation.core)
+    implementation(libs.androidx.compose.foundation.foundation2)
+    implementation(libs.androidx.work.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
@@ -138,5 +143,6 @@ dependencies {
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+    implementation("com.google.accompanist:accompanist-permissions:0.37.3")
 
 }

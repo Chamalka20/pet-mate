@@ -42,6 +42,11 @@ androidxFoundationLayout = "1.10.4"
 animationCoreVersion = "1.10.5"
 androidxFoundationVersion = "1.10.5"
 androidxFoundationLayoutVersion = "1.10.5"
+playServicesLocation = "21.3.0"
+playServicesMaps = "20.0.0"
+remoteCreationCore = "1.0.0-alpha07"
+androidxComposeFoundationFoundation = "1.10.6"
+workRuntimeKtx = "2.11.2"
 
 
 [libraries]
@@ -94,6 +99,11 @@ foundation-layout = { group = "androidx.compose.foundation", name = "foundation-
 androidx-animation-core = { group = "androidx.compose.animation", name = "animation-core", version.ref = "animationCoreVersion" }
 androidx-compose-foundation-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxFoundationVersion" }
 androidx-compose-foundation-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "androidxFoundationLayoutVersion" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
+androidx-compose-remote-creation-core = { group = "androidx.compose.remote", name = "remote-creation-core", version.ref = "remoteCreationCore" }
+androidx-compose-foundation-foundation2 = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxComposeFoundationFoundation" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
