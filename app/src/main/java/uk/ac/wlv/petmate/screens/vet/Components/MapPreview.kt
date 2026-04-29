@@ -1,8 +1,5 @@
 package uk.ac.wlv.petmate.screens.vet.Components
 
-import android.content.Context
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,14 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
-import androidx.core.graphics.createBitmap
-import androidx.core.graphics.drawable.toDrawable
 import uk.ac.wlv.petmate.R
+import uk.ac.wlv.petmate.core.utils.DrawableHelper
 
 
 @Composable
@@ -29,14 +24,6 @@ fun MapPreview(
     longitude: Double?
 ) {
 
-    fun resizeDrawable(ctx: Context, drawableRes: Int, width: Int, height: Int): Drawable {
-        val bitmap = createBitmap(width, height)
-        val canvas = Canvas(bitmap)
-        val drawable = ContextCompat.getDrawable(ctx, drawableRes)!!
-        drawable.setBounds(0, 0, width, height)
-        drawable.draw(canvas)
-        return bitmap.toDrawable(ctx.resources)
-    }
     if (latitude == null || longitude == null) return
 
     Box(
@@ -63,7 +50,7 @@ fun MapPreview(
                         position = startPoint
                         setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                         title = "Vet Location"
-                        icon = resizeDrawable(ctx, R.drawable.ic_vet_marker, 110, 110)
+                        icon = DrawableHelper.resizeDrawable(context, R.drawable.ic_my_location, 110, 110)
                     }
                     overlays.add(marker)
                 }
