@@ -34,11 +34,31 @@ object ApiClient {
         .addNetworkInterceptor(logging)
         .build()
 
+    // ── Nominatim OkHttp Client (separate — needs User-Agent) ────────────
+    private val nominatimClient = OkHttpClient.Builder()
+        .addInterceptor { chain ->
+            chain.proceed(
+                chain.request().newBuilder()
+                    .header("User-Agent", "PetMateApp/1.0")  // required by Nominatim
+                    .build()
+            )
+        }
+        .addNetworkInterceptor(logging)
+        .build()
+
     //  Single Retrofit instance
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()
             .baseUrl(Constants.BASE_URL)
             .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+    // ── Nominatim Retrofit (separate base URL) ────────────────────────────
+    private val nominatimRetrofit: Retrofit by lazy {
+        Retrofit.Builder()
+            .baseUrl("https://nominatim.openstreetmap.org/")
+            .client(nominatimClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
@@ -53,5 +73,9 @@ object ApiClient {
     }
     val vetApi: VetApiService by lazy {
         retrofit.create(VetApiService::class.java)
+    }
+
+    val nominatimApi: NominatimService by lazy {
+        nominatimRetrofit.create(NominatimService::class.java)
     }
 }
