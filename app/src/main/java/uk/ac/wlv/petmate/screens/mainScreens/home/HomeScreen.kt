@@ -28,6 +28,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,7 +67,7 @@ import uk.ac.wlv.petmate.viewmodel.VetViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(sessionViewModel: SessionViewModel = koinViewModel(),petProfileViewModel: PetProfileViewModel,rootNavController:NavController,vetViewModel: VetViewModel) {
-    val ApiUser by sessionViewModel.currentUser
+    val ApiUser by sessionViewModel.user.collectAsState()
     val petListState by petProfileViewModel.petListState.collectAsStateWithLifecycle()
     val vetListState by vetViewModel.vetListState.collectAsStateWithLifecycle()
     val services = listOf(

@@ -1,36 +1,48 @@
 package uk.ac.wlv.petmate.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import uk.ac.wlv.petmate.data.datasources.local.UserCache
 import uk.ac.wlv.petmate.data.model.ApiUser
 import uk.ac.wlv.petmate.data.repository.AuthRepository
 
 class SessionViewModel(
-    private val authRepository: AuthRepository
-) : BaseViewModel() {
+    private val userCache: UserCache
+) : ViewModel() {
 
-    var currentUser = mutableStateOf<ApiUser?>(null)
-        private set
+    private val _isLoggedIn = MutableStateFlow(false)
+    val isLoggedIn: StateFlow<Boolean> = _isLoggedIn
+
+    private val _user = MutableStateFlow<ApiUser?>(null)
+    val user: StateFlow<ApiUser?> = _user
 
     init {
-        loadUser()
-    }
-
-    private fun loadUser() {
         viewModelScope.launch {
-            currentUser.value = authRepository.getCachedUser()
+            val token = userCache.getToken()
+            val user  = userCache.getUser()
+            _isLoggedIn.value = token != null
+            _user.value       = user
         }
     }
 
     fun setUser(user: ApiUser) {
-        currentUser.value = user
+        viewModelScope.launch {
+            userCache.saveUser(user)
+            userCache.saveToken(user.token)
+            _user.value       = user
+            _isLoggedIn.value = true
+        }
     }
 
-    fun logout() {
+    fun signOut() {
         viewModelScope.launch {
-//            authRepository.logout()
-            currentUser.value = null
+            userCache.clear()
+            _user.value       = null
+            _isLoggedIn.value = false
         }
     }
 }

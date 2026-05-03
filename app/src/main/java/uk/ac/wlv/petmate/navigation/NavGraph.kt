@@ -1,6 +1,8 @@
 package uk.ac.wlv.petmate.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -8,7 +10,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.firebase.auth.FirebaseAuth
 import org.koin.compose.viewmodel.koinViewModel
 import uk.ac.wlv.petmate.screens.SignInScreen
@@ -20,24 +21,27 @@ import uk.ac.wlv.petmate.screens.vet.NearbyVetsMapScreen
 import uk.ac.wlv.petmate.screens.vet.VetDetailsScreen
 import uk.ac.wlv.petmate.screens.vet.VetsListScreen
 import uk.ac.wlv.petmate.viewmodel.PetProfileViewModel
+import uk.ac.wlv.petmate.viewmodel.SessionViewModel
 import uk.ac.wlv.petmate.viewmodel.VetViewModel
 
 
 @Composable
 fun NavGraph(
-    googleSignInClient: GoogleSignInClient
+    sessionViewModel: SessionViewModel = koinViewModel()
 ) {
     val navController = rememberNavController()
+    val isLoggedIn by sessionViewModel.isLoggedIn.collectAsState()
     NavHost(
         navController = navController,
         startDestination = "splash",
+
     ) {
 
         // Splash Screen
         composable("splash") {
             SplashScreen(
                 onFinished = {
-                    if(FirebaseAuth.getInstance().currentUser != null) {
+                    if (isLoggedIn) {
                         navController.navigate("authenticated") {
                             popUpTo("splash") { inclusive = true }
                         }
@@ -54,7 +58,7 @@ fun NavGraph(
         composable("signIn") {
             SignInScreen(
                 navController = navController,
-                googleSignInClient = googleSignInClient
+
             )
         }
 
