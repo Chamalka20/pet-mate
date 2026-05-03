@@ -1,7 +1,4 @@
 package uk.ac.wlv.petmate.data.repository.impl
-
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
-import com.google.android.gms.tasks.Task
 import uk.ac.wlv.petmate.data.datasources.local.UserCache
 import uk.ac.wlv.petmate.data.datasources.remote.UserDataSource
 import uk.ac.wlv.petmate.data.model.ApiUser
@@ -13,12 +10,10 @@ class AuthRepositoryImpl(
 ) : AuthRepository {
 
     override suspend fun GoogleSignInResult(
-        task: Task<GoogleSignInAccount>
+        idToken: String
     ): ApiUser {
 
-            val account = task.getResult(Exception::class.java)
-
-            val user = UserDataSource.signInWithGoogle(account)
+            val user = UserDataSource.signInWithGoogle(idToken)
             // 💾 Cache locally
             userCache.saveUser(user)
 

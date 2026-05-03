@@ -7,5 +7,8 @@ interface UserCache {
     suspend fun saveUser(user: ApiUser)
     suspend fun getUser(): ApiUser?
     suspend fun getToken(): String?
+    suspend fun saveToken(token: String)
+    suspend fun clearUser()
+    suspend fun clearToken()
     suspend fun clear()
 }

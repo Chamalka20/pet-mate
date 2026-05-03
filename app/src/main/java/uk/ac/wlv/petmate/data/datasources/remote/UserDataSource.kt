@@ -1,11 +1,8 @@
 package uk.ac.wlv.petmate.data.datasources.remote
 
 import android.util.Log
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.firebase.Firebase
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.auth
-import kotlinx.coroutines.tasks.await
 import uk.ac.wlv.petmate.data.model.ApiUser
 import uk.ac.wlv.petmate.data.model.GoogleSignInRequest
 import uk.ac.wlv.petmate.data.model.LoginRequest
@@ -17,48 +14,28 @@ class UserDataSource {
     private val auth = Firebase.auth
 
     // ── Google Sign-In ────────────────────────────────────
-    suspend fun signInWithGoogle(account: GoogleSignInAccount): ApiUser {
+    suspend fun signInWithGoogle(idToken: String): ApiUser {
 
-        // Step 1 — Sign in to Firebase (same as before)
-        val credential = GoogleAuthProvider.getCredential(
-            account.idToken,
-            null
-        )
-
-        val authResult = auth
-            .signInWithCredential(credential)
-            .await()
-
-        val firebaseUser = authResult.user
-            ?: throw Exception("Firebase user is null")
-
-        // Step 2 — Get Firebase token
-        val firebaseToken = firebaseUser
-            .getIdToken(true)
-            .await()
-            .token
-            ?: throw Exception("Failed to get Firebase token")
-
-        // Step 3 — Send token to .NET API instead of Firestore
+        // Step 1 — Send Google ID token directly to your backend
         val response = ApiClient.authApi.googleSignIn(
-            GoogleSignInRequest(firebaseToken = firebaseToken)
+            GoogleSignInRequest(idToken = idToken)
         )
 
-        if (response.isSuccessful) {
-            val apiUser = response.body()?.user
-                ?: throw Exception("Empty response from server")
-
-            // Save JWT token locally
-            saveToken(apiUser.token)
-
-            Log.d("TAG", "User saved successfully via .NET API!")
-            return apiUser
-
-        } else {
+        if (!response.isSuccessful) {
             val errorBody = response.errorBody()?.string()
             Log.e("TAG", "API Error: $errorBody")
             throw Exception("Sign-in failed: $errorBody")
         }
+
+        // Step 2 — Handle response
+        val apiUser = response.body()?.user
+            ?: throw Exception("Empty response from server")
+
+        // Step 3 — Save your backend JWT token
+        saveToken(apiUser.token)
+
+        Log.d("TAG", "User saved successfully via .NET API!")
+        return apiUser
     }
 
     // ── Normal Login ──────────────────────────────────────

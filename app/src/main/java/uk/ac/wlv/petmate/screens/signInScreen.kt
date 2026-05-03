@@ -1,7 +1,4 @@
 package uk.ac.wlv.petmate.screens
-
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,8 +26,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import org.koin.androidx.compose.koinViewModel
 import uk.ac.wlv.petmate.R
 import uk.ac.wlv.petmate.components.ImageTextButton
@@ -46,7 +41,6 @@ import uk.ac.wlv.petmate.viewmodel.PetProfileViewModel
 @Composable
 fun SignInScreen(
     navController: NavHostController,
-    googleSignInClient: GoogleSignInClient,
     authViewModel: AuthViewModel = koinViewModel(),
     petProfileViewModel: PetProfileViewModel = koinViewModel(),
 
@@ -54,12 +48,6 @@ fun SignInScreen(
     val loginState by authViewModel.loginState.collectAsState()
     val petListState by petProfileViewModel.petListState.collectAsState()
 
-    val launcher = rememberLauncherForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
-        authViewModel.signIn(task)
-    }
 
     LaunchedEffect(loginState) {
         if (loginState is UiState.Success) {
@@ -90,7 +78,7 @@ fun SignInScreen(
 
     SignInScreenContent(
         onGoogleSignInClick = {
-            launcher.launch(googleSignInClient.signInIntent)
+            authViewModel.signInWithGoogle()
         },
         loginState = loginState,
         petState =  petListState

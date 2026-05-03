@@ -51,6 +51,11 @@ android {
             "CLOUDINARY_API_SECRET",
             "\"${getLocalProperty("cloudinary.api.secret")}\""
         )
+        buildConfigField(
+            "String",
+            "WEB_CLIENT_ID",
+            "\"${getLocalProperty("web.client.id")}\""
+        )
     }
 
     buildTypes {
@@ -78,71 +83,95 @@ kotlin {
 
 dependencies {
 
+    // ================= CORE =================
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+
+    // ================= COMPOSE BOM =================
     implementation(platform(libs.androidx.compose.bom))
+
+    // ================= COMPOSE UI =================
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.navigation.compose.v280)
-    implementation("androidx.core:core-splashscreen:1.2.0")
-    implementation("com.google.android.gms:play-services-auth:21.0.0")
     implementation(libs.androidx.compose.runtime)
-    implementation(libs.play.services.basement)
-    implementation(libs.play.services.gcm)
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.compose.ui.text)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.compose.foundation)
-    implementation(libs.androidx.compose.animation)
-    implementation(libs.androidx.compose.ui.test)
-    implementation(libs.ui)
     implementation(libs.androidx.compose.foundation.layout)
-    implementation(libs.androidx.compose.ui.text.google.fonts)
+    implementation(libs.androidx.compose.animation)
+
+    // ================= MATERIAL 3 (IMPORTANT) =================
+    implementation("androidx.compose.material3:material3:1.4.0")
+
+    // Icons (Material 2 icons still commonly used in Compose)
+    implementation("androidx.compose.material:material-icons-extended")
+
+    // ================= NAVIGATION =================
+    implementation(libs.androidx.navigation.compose.v280)
+
+    // ================= LIFECYCLE =================
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    implementation(libs.androidx.foundation)
-    implementation(libs.androidx.foundation.layout)
-    implementation(libs.androidx.compose.ui.geometry)
-    implementation(libs.androidx.compose.animation.core)
-    implementation(libs.foundation)
-    implementation(libs.androidx.ui.text)
-    implementation(libs.foundation.layout)
-    implementation(libs.androidx.animation.core)
-    implementation(libs.androidx.compose.foundation.foundation)
-    implementation(libs.androidx.compose.foundation.foundation.layout)
-    implementation(libs.play.services.location)
-    implementation(libs.play.services.maps)
-    implementation(libs.androidx.compose.remote.creation.core)
-    implementation(libs.androidx.compose.foundation.foundation2)
+
+    // ================= WORK =================
     implementation(libs.androidx.work.runtime.ktx)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(platform(libs.androidx.compose.bom))
-    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    debugImplementation(libs.androidx.compose.ui.tooling)
-    debugImplementation(libs.androidx.compose.ui.test.manifest)
-    implementation(libs.koin.android)
-    implementation(libs.koin.compose)
-    implementation(libs.koin.androidx.compose.v411)
+
+    // ================= FIREBASE =================
     implementation(platform("com.google.firebase:firebase-bom:34.7.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
-    implementation("com.google.firebase:firebase-auth")
+
+    // ================= GOOGLE SERVICES =================
+    implementation("com.google.android.gms:play-services-auth:21.5.1")
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.basement)
+    implementation(libs.play.services.gcm)
+
+    // ================= CREDENTIAL MANAGER =================
+    implementation("androidx.credentials:credentials:1.6.0")
+    implementation("androidx.credentials:credentials-play-services-auth:1.6.0")
+    implementation("com.google.android.libraries.identity.googleid:googleid:1.1.1")
+
+    // ================= DATASTORE =================
     implementation("androidx.datastore:datastore-preferences:1.2.0")
-    implementation("androidx.compose.material:material-icons-extended")
+
+    // ================= IMAGES / UI HELPERS =================
     implementation("com.airbnb.android:lottie-compose:6.3.0")
     implementation("io.coil-kt:coil-compose:2.5.0")
-    implementation("com.cloudinary:cloudinary-android:3.1.2")
-    implementation("com.squareup.okhttp3:okhttp:5.3.2")
-    implementation("org.osmdroid:osmdroid-android:6.1.20")
+
+    // ================= NETWORK =================
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
+
+    // ================= CLOUD =================
+    implementation("com.cloudinary:cloudinary-android:3.1.2")
+
+    // ================= MAPS =================
+    implementation("org.osmdroid:osmdroid-android:6.1.20")
+
+    // ================= PERMISSIONS =================
     implementation("com.google.accompanist:accompanist-permissions:0.37.3")
 
+    // ================= DEPENDENCY INJECTION (KOIN) =================
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.androidx.compose.v411)
+    implementation(libs.googleid)
+
+    // ================= UI TOOLING =================
+    debugImplementation(libs.androidx.compose.ui.tooling)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    // ================= TESTING =================
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
+
+    // ================= OTHER =================
+    implementation("androidx.core:core-splashscreen:1.2.0")
 }
