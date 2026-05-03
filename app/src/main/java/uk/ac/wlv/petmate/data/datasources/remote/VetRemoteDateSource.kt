@@ -88,6 +88,5 @@ class VetRemoteDataSource(
 
     suspend fun getVet(vetId: Int): Vet {
         return ApiClient.vetApi.getVet(id =  vetId)
-            ?: throw Exception("Vet not found")
     }
 }

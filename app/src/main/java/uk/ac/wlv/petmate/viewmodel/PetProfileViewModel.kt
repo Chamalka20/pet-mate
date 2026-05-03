@@ -14,7 +14,6 @@ import uk.ac.wlv.petmate.core.utils.safeApiCall
 import uk.ac.wlv.petmate.data.repository.ImageRepository
 import uk.ac.wlv.petmate.data.repository.PetRepository
 import uk.ac.wlv.petmate.data.model.Allergy
-import uk.ac.wlv.petmate.data.model.Gender
 import uk.ac.wlv.petmate.data.model.MedicalCondition
 import uk.ac.wlv.petmate.data.model.Pet
 import uk.ac.wlv.petmate.data.model.PetType
@@ -22,7 +21,8 @@ import uk.ac.wlv.petmate.data.model.PetType
 class PetProfileViewModel(
         private val petRepository: PetRepository,
         private val imageRepository: ImageRepository,
-        private val savedStateHandle: SavedStateHandle
+        private val savedStateHandle: SavedStateHandle,
+        private val sessionViewModel: SessionViewModel
 ) : BaseViewModel() {
 
     private val _petListState = MutableStateFlow<UiState<List<Pet>>>(UiState.Idle)
@@ -275,7 +275,7 @@ class PetProfileViewModel(
                     // Only upload if it's a new content URI or a file path instead of the existing network URL
                     val currentUri = _petImageUri.value
                     if (currentUri != null && !currentUri.toString().startsWith("http")) {
-                        val userId = FirebaseAuth.getInstance().currentUser?.uid
+                        val userId = sessionViewModel.user.value?.id
                             ?: throw IllegalStateException("User not logged in")
                         val folder = "$userId/pets/profile"
                         val uploadResult = safeApiCall {
@@ -332,7 +332,7 @@ class PetProfileViewModel(
                         var imageUrl = ""
                         _petImageUri.value?.let { uri ->
                             val userId =
-                                    FirebaseAuth.getInstance().currentUser?.uid
+                                sessionViewModel.user.value?.id
                                             ?: throw IllegalStateException("User not logged in")
                             val folder = "$userId/pets/profile"
                             val uploadResult = safeApiCall {

@@ -39,7 +39,7 @@ object ApiClient {
         .addInterceptor { chain ->
             chain.proceed(
                 chain.request().newBuilder()
-                    .header("User-Agent", "PetMateApp/1.0")  // required by Nominatim
+                    .header("User-Agent", "PetMateApp/1.0")
                     .build()
             )
         }

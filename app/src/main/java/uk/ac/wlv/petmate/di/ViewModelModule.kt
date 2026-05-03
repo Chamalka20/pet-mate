@@ -22,6 +22,7 @@ import uk.ac.wlv.petmate.data.repository.impl.ImageRepositoryImpl
 import uk.ac.wlv.petmate.data.repository.impl.LocationSearchRepositoryImpl
 import uk.ac.wlv.petmate.data.repository.impl.PetRepositoryImpl
 import uk.ac.wlv.petmate.data.repository.impl.VetRepositoryImpl
+import uk.ac.wlv.petmate.services.GoogleAuthService
 import uk.ac.wlv.petmate.services.LocationService
 import uk.ac.wlv.petmate.viewmodel.AuthViewModel
 import uk.ac.wlv.petmate.viewmodel.BaseViewModel
@@ -33,6 +34,7 @@ val viewModelModule = module {
 
     // ── Services ──────────────────────────────────────────────────────
     single { LocationService(androidContext()) }
+    single { GoogleAuthService(androidContext()) }
 
     // ── Nominatim (free location search) ─────────────────────────────
     single<NominatimService> { ApiClient.nominatimApi }
@@ -71,7 +73,7 @@ get()
     viewModel {
         SessionViewModel(get())
     }
-    viewModel { AuthViewModel(get(),get()) }
+    viewModel { AuthViewModel(get(),get(),get()) }
     single { PetRemoteDataSource(get  ()) }
     single<PetRepository> {
         PetRepositoryImpl(get())
@@ -81,7 +83,8 @@ get()
         PetProfileViewModel(
            get(),
             get(),
-             get()
+             get(),
+            get()
         )
     }
     single { VetRemoteDataSource() }

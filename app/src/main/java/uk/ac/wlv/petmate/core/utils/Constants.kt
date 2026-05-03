@@ -7,7 +7,7 @@ object Constants {
 
     // ── API URLs ──────────────────────────────────────────
     const val LOCAL_URL      = "http://10.0.2.2:7045/"
-    const val PRODUCTION_URL = "https://petmateapi-production-fd9d.up.railway.app/"
+    const val PRODUCTION_URL = "https://petmateapi-production-30b0.up.railway.app/"
 
     // ── Active URL ────────────────────────────────────────
     val BASE_URL = if (IS_PRODUCTION) PRODUCTION_URL else LOCAL_URL

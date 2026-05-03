@@ -1,5 +1,5 @@
 package uk.ac.wlv.petmate.data.model
 
 data class GoogleSignInRequest(
-    val firebaseToken: String
+    val idToken: String
 )
