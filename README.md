@@ -10,7 +10,7 @@ The application follows modern Android development practices including MVVM arch
 
 <p align="center">
   <img src="https://drive.google.com/uc?export=view&id=1DoTjkljoxGCUdBy5X1nDTD3IYkjEeehb" width="250"/>
-  <img src="https://drive.google.com/uc?export=view&id=19CcxU5okNIoHY8auA5HoKJQkSV-iwxII" width="250"/>
+  <img src="https://drive.google.com/uc?export=view&id=1HIfo8b0h1xyWhzss1qffUw36VkuuMwoc" width="250"/>
   <img src="https://drive.google.com/uc?export=view&id=168lskd9vjlHcQYXVgt51wLydBzxqD0Lx" width="250"/>
 </p>
 
