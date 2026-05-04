@@ -1,4 +1,5 @@
 package uk.ac.wlv.petmate.screens.vet
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -46,6 +47,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -55,6 +57,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import kotlinx.coroutines.launch
+import uk.ac.wlv.petmate.components.ErrorScreen
+import uk.ac.wlv.petmate.components.PullToRefreshLayout
 import uk.ac.wlv.petmate.core.UiState
 import uk.ac.wlv.petmate.data.model.Vet
 import uk.ac.wlv.petmate.viewmodel.VetViewModel
@@ -82,6 +87,10 @@ fun VetsListScreen(
     var showFilterSheet by remember { mutableStateOf(false) }
     val filterState    by vetViewModel.filterState.collectAsState()
 
+    val listState    = rememberLazyListState()
+    val scope        = rememberCoroutineScope()
+    var isRefreshing by remember { mutableStateOf(false) }
+
 // Show active filter count badge on Filter chip
     val activeFilterCount = remember(filterState) {
         var count = 0
@@ -102,107 +111,135 @@ fun VetsListScreen(
         )
     }
 
+    // ── Pagination trigger ────────────────────────────────────────────
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+            val totalItems  = listState.layoutInfo.totalItemsCount
+            totalItems > 3 &&
+                    lastVisible != null &&
+                    lastVisible.index >= totalItems - 3
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore && !isLoadingMore) {
+            vetViewModel.loadMoreVets()
+        } else {
+            Log.d(
+                "Pagination",
+                ">>> Skipped — shouldLoadMore=$shouldLoadMore isLoadingMore=$isLoadingMore"
+            )
+        }
+
+    }
     LaunchedEffect(Unit) {
-        vetViewModel.loadVetList(isfilter = true)
+        vetViewModel.loadVetList(isfilter = true, isRefresh = true)
     }
     Scaffold(
         topBar = { VetsTopBar(onBackClick = { navController.popBackStack()}) },
         // background → PetBackground (light) / PetBackgroundDark (dark)
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
-        Column(
+
+        PullToRefreshLayout(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                scope.launch {
+                    isRefreshing = true
+                    vetViewModel.loadVetList(isfilter = true, isRefresh = true)
+                    isRefreshing = false
+                }
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            VetSearchBar(
-                query = searchQuery,
-                onQueryChange = { vetViewModel.onSearchQueryChange(it) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
-            )
-
-            FilterSortRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp),
-                activeFilterCount = activeFilterCount,
-                onFilterClick     = { showFilterSheet = true },
-                navController
-            )
-
-            when (val state = vetListState) {
-
-                // Loading first page
-                is UiState.Loading -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
+            LazyColumn(
+                state = listState,
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues( vertical = 4.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                item {
+                    VetSearchBar(
+                        query = searchQuery,
+                        onQueryChange = { vetViewModel.onSearchQueryChange(it) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                }
+                item {
+                    FilterSortRow(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        activeFilterCount = activeFilterCount,
+                        onFilterClick = { showFilterSheet = true },
+                        navController
+                    )
                 }
 
-                // Success — show list
-                is UiState.Success -> {
-                    val vets = state.data
+                when (val state = vetListState) {
 
-                    if (vets.isEmpty()) {
-                        // Empty state
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Icon(
-                                    imageVector = Icons.Default.SearchOff,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
-                                    modifier = Modifier.size(64.dp)
+                    // Loading first page
+                    is UiState.Loading -> {
+                        item {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.primary
                                 )
-                                Spacer(modifier = Modifier.height(12.dp))
+                            }
+                        }
+                    }
+
+                    // Success — show list
+                    is UiState.Success -> {
+                        val vets = state.data
+
+                        if (vets.isEmpty()) {
+                            // Empty state
+                            item {
+                                Box(
+                                    contentAlignment = Alignment.Center,
+                                    modifier = Modifier.fillMaxSize()
+                                ) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Icon(
+                                            imageVector = Icons.Default.SearchOff,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f),
+                                            modifier = Modifier.size(64.dp)
+                                        )
+                                        Spacer(modifier = Modifier.height(12.dp))
+                                        Text(
+                                            text = "No vets found",
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onBackground.copy(
+                                                alpha = 0.4f
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        } else {
+                            item {
                                 Text(
-                                    text = "No vets found",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)
+                                    text = "Showing ${vets.size} Vets",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
+                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                                 )
                             }
-                        }
-                    } else {
-                        Text(
-                            text = "Showing ${vets.size} Vets",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f),
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
-                        )
-
-                        val listState = rememberLazyListState()
-
-                        // Trigger loadNextPage when reaching last item
-                        val shouldLoadMore by remember {
-                            derivedStateOf {
-                                val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()
-                                val totalItems = listState.layoutInfo.totalItemsCount
-                                lastVisible != null && lastVisible.index >= totalItems - 3
-                            }
-                        }
-                        LaunchedEffect(shouldLoadMore) {
-                            if (shouldLoadMore && !isLoadingMore) {
-                                vetViewModel.loadMoreVets()
-                            }
-                        }
 
 
-                        LazyColumn(
-                            state = listState,
-                            verticalArrangement = Arrangement.spacedBy(12.dp),
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
-                            modifier = Modifier.fillMaxSize(),
 
-                        ) {
+
+
                             items(
                                 items = vets,
                                 key = { vet -> vet.id }
@@ -232,51 +269,30 @@ fun VetsListScreen(
                             }
 
                             item { Spacer(modifier = Modifier.height(16.dp)) }
+
                         }
                     }
-                }
 
-                // Error state
-                is UiState.Error -> {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(
-                                imageVector = Icons.Default.WifiOff,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(64.dp)
+                    // Error state
+                    is UiState.Error -> {
+                        item {
+                            ErrorScreen(
+                                onRetry = { vetViewModel.loadVetList(isfilter = true) }
                             )
-                            Spacer(modifier = Modifier.height(12.dp))
-                            Text(
-                                text = state.message,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.error
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Button(
-                                onClick = { vetViewModel.loadVetList(isfilter = true) },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
-                                )
+                        }
+                    }
+
+                    UiState.Idle -> {
+                        item {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
                             ) {
-                                Text("Retry")
+                                CircularProgressIndicator(
+                                    color = MaterialTheme.colorScheme.primary
+                                )
                             }
                         }
-                    }
-                }
-
-                UiState.Idle -> {
-
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary
-                        )
                     }
                 }
             }

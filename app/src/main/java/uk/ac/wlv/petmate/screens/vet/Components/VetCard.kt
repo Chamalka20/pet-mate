@@ -60,6 +60,7 @@ fun VetCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClick() }
+            .padding(horizontal =  16.dp)
     ) {
         Column(modifier = Modifier.padding(14.dp)) {
 
