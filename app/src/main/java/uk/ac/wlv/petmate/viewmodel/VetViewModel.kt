@@ -65,7 +65,7 @@ class VetViewModel(private val vetRepository: VetRepository, private val locatio
                 _searchQuery
                     .debounce(500)
                     .distinctUntilChanged()
-                    .filter { it.length >= 2 }  // only search if 2+ chars
+                    .filter { it.length >= 2 }
                     .collect { query ->
                         _isSearching.value = true
                         try {
