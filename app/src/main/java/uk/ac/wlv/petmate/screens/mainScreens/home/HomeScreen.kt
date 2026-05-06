@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -141,258 +142,251 @@ fun HomeScreen(sessionViewModel: SessionViewModel = koinViewModel(),petProfileVi
                             contentDescription = "Notifications"
                         )
                     }
-                }
+                },
+                windowInsets = WindowInsets(0.dp)
             )
         }
     ) {padding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(padding),
-            contentAlignment = Alignment.TopStart
+        PullToRefreshLayout(
+            isRefreshing = isRefreshing,
+            onRefresh    = {
+                scope.launch {
+                    isRefreshing = true
+                    petProfileViewModel.loadPetList()
+                    vetViewModel.loadVetList(isfilter = false)
+                    isRefreshing = false
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        ){
+            LazyColumn(
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = padding,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
 
-        ) {
-            PullToRefreshLayout(
-                isRefreshing = isRefreshing,
-                onRefresh    = {
-                    scope.launch {
-                        isRefreshing = true
-                        petProfileViewModel.loadPetList()
-                        vetViewModel.loadVetList(isfilter = false)
-                        isRefreshing = false
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
-            ){
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                item {
+                    Text(
+                        "Hello,${ApiUser?.fullName}",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+                item {
+                    when (petListState) {
 
-                ) {
-                    item {
-                        Text(
-                            "Hello,${ApiUser?.fullName}",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                    item {
-                        when (petListState) {
+                        is UiState.Idle -> Unit
 
-                            is UiState.Idle -> Unit
+                        is UiState.Loading -> {
+                            PetShimmerRow(
+                                itemCount = 4,
 
-                            is UiState.Loading -> {
-                                PetShimmerRow(
-                                    itemCount = 4,
-
-                                    )
-                            }
-
-                            is UiState.Success -> {
-                                val pets = (petListState as UiState.Success<List<Pet>>).data
-
-                                LazyRow(
-                                    contentPadding = PaddingValues(horizontal = 16.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    items(pets) { pet ->
-                                        PetItem(
-                                            pet,
-                                            onClick = {
-                                                rootNavController.navigate(
-                                                    "petDetailsScreen/${pet.id}"
-                                                )
-                                            }
-                                        )
-                                    }
-
-                                    item {
-                                        AddPetItem(
-                                            onClick = {
-                                                rootNavController.navigate(
-                                                    "petProfileSetup?isDefaultAddBackButton=true"
-                                                )
-                                            }
-                                        )
-                                    }
-                                }
-                            }
-
-                            is UiState.Error -> {
-                                ErrorRow(
-                                    onRetry = { petProfileViewModel.loadPetList() }
                                 )
-                            }
                         }
-                    }
 
-                    item {
-                        Text(
-                            "Quick Services",
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier.padding(16.dp)
-                        )
-                    }
-                    item {
-                        Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
-                            LazyVerticalGrid(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(280.dp),
-                                userScrollEnabled = false,
-                                columns = GridCells.Fixed(3),
-                                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
+                        is UiState.Success -> {
+                            val pets = (petListState as UiState.Success<List<Pet>>).data
 
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                items(services) { item ->
-                                    ServiceItemCard(item)
+                                items(pets) { pet ->
+                                    PetItem(
+                                        pet,
+                                        onClick = {
+                                            rootNavController.navigate(
+                                                "petDetailsScreen/${pet.id}"
+                                            )
+                                        }
+                                    )
+                                }
+
+                                item {
+                                    AddPetItem(
+                                        onClick = {
+                                            rootNavController.navigate(
+                                                "petProfileSetup?isDefaultAddBackButton=true"
+                                            )
+                                        }
+                                    )
                                 }
                             }
                         }
-                    }
-                    item {
-                        Box(modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)) {
-                            EmergencyCard(onClick = {})
+
+                        is UiState.Error -> {
+                            ErrorRow(
+                                onRetry = { petProfileViewModel.loadPetList() }
+                            )
                         }
                     }
-                    item {
-                        Row(
+                }
+
+                item {
+                    Text(
+                        "Quick Services",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+                item {
+                    Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+                        LazyVerticalGrid(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                .height(280.dp),
+                            userScrollEnabled = false,
+                            columns = GridCells.Fixed(3),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+
                         ) {
+                            items(services) { item ->
+                                ServiceItemCard(item)
+                            }
+                        }
+                    }
+                }
+                item {
+                    Box(modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)) {
+                        EmergencyCard(onClick = {})
+                    }
+                }
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text(
+                            "Activity Reminder",
+                            style = MaterialTheme.typography.titleMedium,
+
+                            )
+
+                        Row {
 
                             Text(
-                                "Activity Reminder",
-                                style = MaterialTheme.typography.titleMedium,
+                                "View All",
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
 
                                 )
-
-                            Row {
-
-                                Text(
-                                    "View All",
-                                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
-
-                                    )
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                                    contentDescription = null,
-                                    tint = Color.Gray,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                                contentDescription = null,
+                                tint = Color.Gray,
+                                modifier = Modifier.size(16.dp)
+                            )
                         }
 
                     }
-                    item {
-
-                        LazyRow(
-                            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-
-                            items(getSampleReminders()) { reminder ->
-                                ReminderCard(reminder)
-                            }
-                        }
-                    }
-
-                    item {
-                        Image(
-
-                            painter = painterResource(id = R.drawable.ad_banner),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                        )
-                    }
-
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 16.dp),
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-
-                            Text(
-                                "Nearby Vets",
-                                style = MaterialTheme.typography.titleMedium,
-
-                                )
-
-                            Row(
-                                modifier = Modifier.clickable {
-                                    rootNavController.navigate(
-                                        "vetsListScreen"
-                                    )
-                                },
-                            ) {
-
-                                Text(
-                                    "View All",
-                                    style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
-
-                                    )
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
-                                    contentDescription = null,
-                                    tint = Color.Gray,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-
-                        }
-
-                    }
-
-                    item {
-                        when (vetListState) {
-
-                            is UiState.Idle -> Unit
-
-                            is UiState.Loading -> {
-                                VetCardShimmerRow()
-                            }
-
-                            is UiState.Success -> {
-                                val vets = (vetListState as UiState.Success<List<Vet>>).data
-
-                                LazyRow(
-                                    contentPadding = PaddingValues(horizontal = 16.dp),
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                                ) {
-                                    items(vets) { vet ->
-                                        VetCard(
-                                            vet,
-                                            onClick = {
-                                                rootNavController.navigate(
-                                                    "vetDetailsScreen/${vet.id}"
-                                                )
-                                            }
-                                        )
-                                    }
-
-
-                                }
-                            }
-
-                            is UiState.Error -> {
-                                ErrorRow(
-                                    onRetry = { vetViewModel.loadVetList(isfilter = false) }
-                                )
-                            }
-                        }
-                    }
-
 
                 }
-            }
+                item {
 
+                    LazyRow(
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+
+                        items(getSampleReminders()) { reminder ->
+                            ReminderCard(reminder)
+                        }
+                    }
+                }
+
+                item {
+                    Image(
+
+                        painter = painterResource(id = R.drawable.ad_banner),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                    )
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+
+                        Text(
+                            "Nearby Vets",
+                            style = MaterialTheme.typography.titleMedium,
+
+                            )
+
+                        Row(
+                            modifier = Modifier.clickable {
+                                rootNavController.navigate(
+                                    "vetsListScreen"
+                                )
+                            },
+                        ) {
+
+                            Text(
+                                "View All",
+                                style = MaterialTheme.typography.bodySmall.copy(color = Color.Gray),
+
+                                )
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowForwardIos,
+                                contentDescription = null,
+                                tint = Color.Gray,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+
+                    }
+
+                }
+
+                item {
+                    when (vetListState) {
+
+                        is UiState.Idle -> Unit
+
+                        is UiState.Loading -> {
+                            VetCardShimmerRow()
+                        }
+
+                        is UiState.Success -> {
+                            val vets = (vetListState as UiState.Success<List<Vet>>).data
+
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 16.dp),
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(vets) { vet ->
+                                    VetCard(
+                                        vet,
+                                        onClick = {
+                                            rootNavController.navigate(
+                                                "vetDetailsScreen/${vet.id}"
+                                            )
+                                        }
+                                    )
+                                }
+
+
+                            }
+                        }
+
+                        is UiState.Error -> {
+                            ErrorRow(
+                                onRetry = { vetViewModel.loadVetList(isfilter = false) }
+                            )
+                        }
+                    }
+                }
+
+
+            }
         }
     }
 
